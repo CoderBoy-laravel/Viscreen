@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+progress::-moz-progress-bar { background: #0ea5e9; }
+progress::-webkit-progress-value { background: #0ea5e9; }
+progress { color: #0ea5e9; }
