@@ -7,11 +7,17 @@
             <p>Watch {{ $slug }} Files</p>
         </div>
         <div class="flex">
-            <div class="w-2/3">
+            <div class="w-2/3 min-w-2/3">
+                @if (count($data) >= 1)
                 @foreach ($data as $item)
                 <div class="flex h-[200px] mb-3">
                     @if ($item->type == 'video')
-                    <img src="{{ url('/') }}{{ $item->thumb }}" class="w-[200px] h-full shadow-md"/>
+                        @if ($item->thumb == null)
+                            <img src="{{ url('/') }}{{ '/assets/Upload/video.png' }}" class="w-[200px] h-full shadow-md" />
+                        @else
+                            <img src="{{ url('/') }}{{ $item->thumb }}" class="w-[200px] h-full shadow-md"/>
+                    @endif
+
                     @else
                     <img src="{{ url('/') }}/assets/Upload/music.png" class="w-[200px] h-full shadow-md"/>
                     @endif
@@ -21,6 +27,10 @@
                     </div>
                 </div>
                 @endforeach
+                    @else
+                    <p class="text-xl font-bold">No Data Found</p>
+                @endif
+                {{ $data->links() }}
             </div>
             <div class="w-1/3 px-10">
                 <p class="pb-5 border-b">Category</p>
@@ -33,14 +43,16 @@
         </div>
     </div>
     <div class="bg-slate-800 bg-opacity-50 absolute top-0 right-0 bottom-0 left-0" id="modalSee" style="display: none">
-        <div class="flex items-center px-8 py-7 rounded-md text-center relative w-full lg:w-7xl h-full">
+        <div class="absolute top-5 right-5 w-full text-right text-xl px-2">
+            <p class="p-5 px-7 bg-[#0000007a] inline-block rounded-full text-white active:bg-black hover:bg-[#000000ad] cursor-pointer" onclick="viewHandler(null, null)">
+                <i class="fa-sharp fa-solid fa-xmark cursor-pointer"></i>
+            </p>
+        </div>
+        <div class="flex items-stretch px-8 py-7 rounded-md text-center relative top-1/2 -translate-y-1/2 w-full lg:w-7xl">
             <div class="w-3/5" id="player">
 
             </div>
-            <div class="w-2/5 bg-white h-screen px-5 py-10 text-left">
-                <div class="absolute top-0 right-9 w-full text-right text-xl px-2">
-                    <i class="fa-sharp fa-solid fa-xmark cursor-pointer" onclick="viewHandler(null, null)"></i>
-                </div>
+            <div class="w-2/5 bg-white px-5 py-10 text-left">
                 <p class="text-3xl font-bold pb-5 border-b" id="seeTitle"></p>
                 <p class="text-base" id="seeDescription"></p>
             </div>

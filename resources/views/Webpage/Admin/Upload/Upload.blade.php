@@ -44,10 +44,14 @@
                                     {{ $loop->iteration }}
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    @if ($item->thumb == null)
+                                    @if ($item->thumb == null && $item->type == 'audio')
                                     <img src="{{ url('/') }}{{ '/assets/Upload/music.png' }}" class="w-11" />
                                     @else
+                                    @if ($item->thumb == null)
+                                    <img src="{{ url('/') }}{{ '/assets/Upload/video.png' }}" class="w-20" />
+                                    @else
                                     <img src="{{ url('/') }}{{ $item->thumb }}" class="w-32" />
+                                    @endif
                                     @endif
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
@@ -60,11 +64,13 @@
                                     <button class="px-4 py-3 bg-blue-500 text-white text-sm rounded-full ml-3"
                                         onclick="viewHandler('{{ url('/') }}',{{ json_encode(['file' => $item->file, 'link' => $item->link, 'thumb' => $item->thumb, 'title' => $item->title, 'description' => $item->description]) }})"><i
                                             class="fa-solid fa-play"></i></button>
-                                    <button class="px-4 py-3 bg-sky-400 text-white text-sm rounded-full ml-3"
-                                        onclick="editHandler({{ json_encode(['id' => $item->id, 'link' => $item->link, 'type' => $item->type, 'title' => $item->title, 'description' => $item->description]) }})"><i
-                                            class="fa-solid fa-pen-to-square"></i></button>
-                                    <button onclick="modalDelHandler(this)" data-url="{{ route('deleteUpload',$item->id) }}" class="px-4 py-3 bg-red-500 text-white text-sm rounded-full ml-3"><i
-                                         class="fa-solid fa-trash"></i></button>
+                                            @if ($item->user_id == Auth::user()->id)
+                                            <button class="px-4 py-3 bg-sky-400 text-white text-sm rounded-full ml-3"
+                                                onclick="editHandler({{ json_encode(['id' => $item->id, 'link' => $item->link, 'type' => $item->type, 'title' => $item->title, 'description' => $item->description]) }})"><i
+                                                    class="fa-solid fa-pen-to-square"></i></button>
+                                            <button onclick="modalDelHandler(this)" data-url="{{ route('deleteUpload',$item->id) }}" class="px-4 py-3 bg-red-500 text-white text-sm rounded-full ml-3"><i
+                                                 class="fa-solid fa-trash"></i></button>
+                                            @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -151,14 +157,16 @@
         </div>
     </div>
     <div class="bg-slate-800 bg-opacity-50 absolute top-0 right-0 bottom-0 left-0" id="modalSee" style="display: none">
-        <div class="flex items-center px-8 py-7 rounded-md text-center relative w-full lg:w-7xl h-full">
+        <div class="absolute top-5 right-5 w-full text-right text-xl px-2">
+            <p class="p-5 px-7 bg-[#0000007a] inline-block rounded-full text-white active:bg-black hover:bg-[#000000ad] cursor-pointer" onclick="viewHandler(null, null)">
+                <i class="fa-sharp fa-solid fa-xmark cursor-pointer"></i>
+            </p>
+        </div>
+        <div class="flex items-stretch px-8 py-7 rounded-md text-center relative top-1/2 -translate-y-1/2 w-full lg:w-7xl">
             <div class="w-3/5" id="player">
 
             </div>
-            <div class="w-2/5 bg-white h-screen px-5 py-10 text-left">
-                <div class="absolute top-0 right-9 w-full text-right text-xl px-2">
-                    <i class="fa-sharp fa-solid fa-xmark cursor-pointer" onclick="viewHandler(null, null)"></i>
-                </div>
+            <div class="w-2/5 bg-white px-5 py-10 text-left">
                 <p class="text-3xl font-bold pb-5 border-b" id="seeTitle"></p>
                 <p class="text-base" id="seeDescription"></p>
             </div>

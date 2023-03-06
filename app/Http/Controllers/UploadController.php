@@ -105,11 +105,13 @@ class UploadController extends Controller
                 'title' => 'required',
                 'description' => 'required',
             ]);
-            if (file_exists(public_path() . $upload->file)) {
-                unlink(public_path() . $upload->file);
-            }
-            if (file_exists(public_path() . $upload->thumb)) {
-                unlink(public_path() . $upload->thumb);
+            if ($upload->file) {
+                if (file_exists(public_path() . $upload->file)) {
+                    unlink(public_path() . $upload->file);
+                }
+                if (file_exists(public_path() . $upload->thumb)) {
+                    unlink(public_path() . $upload->thumb);
+                }
             }
             Upload::where('id', $request->id)->update([
                 'type' => $request->type,
@@ -188,12 +190,14 @@ class UploadController extends Controller
 
     public function deleteUpload($id) {
         $upload = Upload::where('id', $id)->first();
-        if (file_exists(public_path() . $upload->file)) {
-            unlink(public_path() . $upload->file);
-        }
-        if (strlen($upload->thumb) > 4) {
-            if (file_exists(public_path() . $upload->thumb)) {
-                unlink(public_path() . $upload->thumb);
+        if ($upload->file) {
+            if (file_exists(public_path() . $upload->file)) {
+                unlink(public_path() . $upload->file);
+            }
+            if (strlen($upload->thumb) > 4) {
+                if (file_exists(public_path() . $upload->thumb)) {
+                    unlink(public_path() . $upload->thumb);
+                }
             }
         }
         $upload->delete();
