@@ -11,7 +11,10 @@
             selected
         @endif value="audio">Audio</option>
         </select>
+        <div>
+        <button onclick="bulkModalHandler()" class="px-7 py-2 bg-blue-500 text-white rounded">Bulk upload</button>
         <button onclick="modalHandler()" class="px-7 py-2 bg-sky-500 text-white rounded">Upload File</button>
+        </div>
     </div>
     <div class="flex flex-col mt-5">
         <div class="overflow-x-auto sm:mx-0.5 lg:mx-0.5">
@@ -61,7 +64,8 @@
                                     {{ substr($item->description, 0, 50) }}{{ strlen($item->description) > 50 ? '...' : null}}
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-right">
-                                    <button class="px-4 py-3 bg-blue-500 text-white text-sm rounded-full ml-3"
+                                    @if($item->type == 'video'|| $item->type == 'audioo')
+                                        <button class="px-4 py-3 bg-blue-500 text-white text-sm rounded-full ml-3"
                                         onclick="viewHandler('{{ url('/') }}',{{ json_encode(['file' => $item->file, 'link' => $item->link, 'thumb' => $item->thumb, 'title' => $item->title, 'description' => $item->description]) }})"><i
                                             class="fa-solid fa-play"></i></button>
                                             @if ($item->user_id == Auth::user()->id)
@@ -71,6 +75,18 @@
                                             <button onclick="modalDelHandler(this)" data-url="{{ route('deleteUpload',$item->id) }}" class="px-4 py-3 bg-red-500 text-white text-sm rounded-full ml-3"><i
                                                  class="fa-solid fa-trash"></i></button>
                                             @endif
+                                    @else
+                                        <button class="px-4 py-3 bg-blue-500 text-white text-sm rounded-full ml-3"
+                                                onclick="viewBulkHandler('{{ url('/') }}',{{ json_encode(['file' => $item->file, 'link' => $item->link, 'thumb' => $item->thumb, 'title' => $item->title, 'description' => $item->description,'playlist' =>getPlayListFile($item->type,$item->file)]) }})"><i
+                                                class="fa-solid fa-play"></i></button>
+                                        @if ($item->user_id == Auth::user()->id)
+                                            <button class="px-4 py-3 bg-sky-400 text-white text-sm rounded-full ml-3"
+                                                    onclick="editBulkHandler({{ json_encode(['id' => $item->id, 'link' => $item->link, 'type' => $item->type,'file' => $item->file, 'title' => $item->title, 'description' => $item->description]) }})"><i
+                                                    class="fa-solid fa-pen-to-square"></i></button>
+                                            <button onclick="modalBulkDelHandler(this)" data-url="{{ route('deleteBulkUpload',$item->id) }}" class="px-4 py-3 bg-red-500 text-white text-sm rounded-full ml-3"><i
+                                                    class="fa-solid fa-trash"></i></button>
+                                        @endif
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -156,19 +172,20 @@
             </form>
         </div>
     </div>
-    <div class="bg-slate-800 bg-opacity-50 absolute top-0 right-0 bottom-0 left-0" id="modalSee" style="display: none">
-        <div class="absolute top-5 right-5 w-full text-right text-xl px-2">
+    <div class="bg-slate-800 bg-opacity-50 fixed top-0 right-0 bottom-0 left-0" id="modalSee" style="display: none">
+        <div class="fixed top-5 right-5 w-full text-right text-xl px-2">
             <p class="p-5 px-7 bg-[#0000007a] inline-block rounded-full text-white active:bg-black hover:bg-[#000000ad] cursor-pointer" onclick="viewHandler(null, null)">
                 <i class="fa-sharp fa-solid fa-xmark cursor-pointer"></i>
             </p>
         </div>
-        <div class="flex items-stretch px-8 py-7 rounded-md text-center relative top-1/2 -translate-y-1/2 w-full lg:w-7xl">
+        <div class="flex items-stretch px-8 py-7 rounded-md text-center fixed top-1/2 -translate-y-1/2 w-full lg:w-7xl">
             <div class="w-3/5" id="player">
 
             </div>
             <div class="w-2/5 bg-white px-5 py-10 text-left">
                 <p class="text-3xl font-bold pb-5 border-b" id="seeTitle"></p>
                 <p class="text-base" id="seeDescription"></p>
+                <p class="text-base" id="playList"></p>
             </div>
         </div>
     </div>
@@ -186,6 +203,47 @@
             </div>
         </div>
     </div>
+
+
+    <div class="bg-slate-800 bg-opacity-50 flex justify-center items-center fixed top-0 right-0 bottom-0 left-0"
+         id="bulk_modal" style="display: none">
+        <div class="bg-white px-8 py-7 rounded-md text-center relative w-full md:w-[600px]">
+            <form data-url="{{ route('addBulkFile') }}" method="POST" id="frmBulkUpload">
+                <input type="hidden" name="id" id="bulk_id" value=""/>
+                <div class="absolute top-0 right-0 w-full text-right text-xl px-2">
+                    <i class="fa-sharp fa-solid fa-xmark cursor-pointer" onclick="bulkModalHandler()"></i>
+                </div>
+                @csrf
+                <h1 class="text-xl mb-4 font-bold text-slate-500">Bulk Upload</h1>
+                <div class="text-left">
+                    <select class="w-full px-3 py-3 rounded-md mb-5" name="type" id="bulk_type" required>
+                        <option value="bulkvideo">Video</option>
+                        <option value="bulkaudio">Audio</option>
+                    </select>
+                    <div class="justify-between items-center">
+                        <p class="text-sm">Directory Path on Server</p>
+                        <div class=" items-center">
+                            <input type="text" name="file" id="bulk_file" class="border w-full" required></input>
+                            <div style="color: #ccc; font-size: 0.85em">Root directory <b>/public/assets/Upload/</b></div>
+                        </div>
+                    </div>
+                    <p id='fileError' class="text-rose-500 mb-5"></p>
+                    <p class="text-sm">Title</p>
+                    <textarea name="title" id="bulk_title" class="border w-full" required></textarea>
+                    <p id='titleError' class="text-rose-500 mb-5"></p>
+                    <p class="text-sm">Description</p>
+                    <textarea name="description" id="bulk_description" class="border w-full" required></textarea>
+                    <p id='descriptionError' class="text-rose-500 mb-5"></p>
+                    <progress class="progress w-full mb-8" value="0" max="100" style="display: none"></progress>
+                </div>
+                <button type="submit" class="px-7 py-2 bg-sky-500 text-white rounded">Submit</button>
+                <button type="button" class="px-7 py-2 bg-gray-500 text-white rounded" onclick="bulkModalHandler()">Cancel</button>
+                <div id="bulk_message" style="color: red; margin-top: 15px;"></div>
+            </form>
+        </div>
+    </div>
+
+
     @push('js')
     <script src="{{ url('/') }}/assets/js/jquery-3.6.3.min.js"></script>
     <script type="text/javascript" src="{{ url('/') }}/assets/js/plyr.js"></script>

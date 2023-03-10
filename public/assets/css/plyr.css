@@ -1,3 +1,29 @@
+#playList{
+    margin-top: 20px;
+    border-top: 2px solid #ccc;
+}
+
+.playListItem{
+    display: inline-block;
+    padding: 5px 15px;
+    margin: 5px;
+    background: #f1f1f1;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+#playList .active{
+    background: #0E4675;
+    border: 1px solid #ccc;
+    color: #fff;
+}
+
+.playListItem:hover{
+    border: 1px solid #ccc;
+}
+
 .ig-container {
     color: #fff;
     -webkit-tap-highlight-color: transparent;

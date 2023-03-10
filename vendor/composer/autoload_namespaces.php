@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Pimple' => array($vendorDir . '/pimple/pimple/src'),
     'Mockery' => array($vendorDir . '/mockery/mockery/library'),
     'Evenement' => array($vendorDir . '/evenement/evenement/src'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),

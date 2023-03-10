@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Upload;
 use App\Models\User;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
@@ -13,8 +14,8 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller
 {
     public function index () {
-        $video = Upload::where('type', 'video')->get();
-        $audio = Upload::where('type', 'audio')->get();
+        $video = Upload::whereIn('type', array('video','bulkvideo'))->get();
+        $audio = Upload::whereIn('type', array('audio','bulkaudio'))->get();
         $user = User::where('id', '!=', Auth::user()->id)->get();
         return view('Webpage.Admin.Dashboard', compact('video', 'audio', 'user'));
     }
@@ -46,5 +47,29 @@ class AdminController extends Controller
         else{
             return abort(403);
         }
+    }
+
+    public function settings(){
+        $config = Setting::where('code','TIMELINE')->first();
+        if (Auth::user()->role == 'admin') {
+            return view('Webpage.Admin.Settings', compact('config'));
+        }else{
+            return abort(403);
+        }
+    }
+
+    public function updateSetting(Request $request){
+        $config = Setting::where('code','TIMELINE')->first();
+        if(!$config){
+            Setting::insert([
+                'code'=>'TIMELINE',
+                'data'=>$request->time
+            ]);
+        }else{
+            Setting::where('code','TIMELINE')->update([
+                'data'=>$request->time
+            ]);
+        }
+        return back()->with('message', 'Update Successfully');
     }
 }
