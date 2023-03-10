@@ -17,7 +17,7 @@
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link href="{{ route('upload') }}" :active="request()->routeIs('upload')">
+                    <x-nav-link href="{{ route('slug', 'video') }}" :active="request()->routeIs('slug')">
                         {{ __('Upload') }}
                     </x-nav-link>
                 </div>
@@ -26,6 +26,16 @@
                         {{ __('Users') }}
                     </x-nav-link>
                 </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link href="{{ route('article') }}" :active="request()->routeIs('article') || request()->routeIs('category')">
+                            {{ __('Articles') }}
+                        </x-nav-link>
+                    </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link href="{{ route('settings') }}" :active="request()->routeIs('settings')">
+                            {{ __('Settings') }}
+                        </x-nav-link>
+                    </div>
 
                 @endauth
             </div>
@@ -156,8 +166,12 @@
             </x-responsive-nav-link>
         </div>
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('upload') }}" :active="request()->routeIs('upload')">
+            <x-responsive-nav-link href="{{ route('slug', 'video') }}" :active="request()->routeIs('slug')">
                 {{ __('Upload') }}
+            </x-responsive-nav-link>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link href="{{ route('users') }}" :active="request()->routeIs('users')">
+                {{ __('Users') }}
             </x-responsive-nav-link>
         </div>
         @auth

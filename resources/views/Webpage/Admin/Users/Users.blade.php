@@ -1,8 +1,9 @@
 <x-app-layout>
-
+    @if (Auth::user()->role == 'admin')
     <div class="flex justify-end items-center sm:px-6 lg:px-8 mt-5">
         <button onclick="modalHandler()" class="px-7 py-2 bg-sky-500 text-white rounded">Add User</button>
     </div>
+    @endif
     <div class="flex flex-col mt-5">
         <div class="overflow-x-auto sm:mx-0.5 lg:mx-0.5">
             <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
