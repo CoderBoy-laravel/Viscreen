@@ -18,14 +18,7 @@ class UploadController extends Controller
 
     public function slug ($slug){
         $selected = $slug;
-        switch ($slug){
-            case 'audio':
-                $slugType = ['audio','bulkaudio'];
-                break;
-            default:
-                $slugType = ['video','bulkvideo'];
-        }
-        $data = Upload::whereIn('type', $slugType)->paginate(10);
+        $data = Upload::where('type', $slug)->paginate(10);
         return view('Webpage.Admin.Upload.Upload', compact('data', 'selected'));
     }
 
@@ -207,48 +200,6 @@ class UploadController extends Controller
                 }
             }
         }
-        $upload->delete();
-        return back()->with('messege', 'File Deleted Successfully');
-    }
-
-    public function addBulkFile(Request $request){
-        $request->validate([
-            'type' => 'required',
-            'file' => 'required',
-            'title' => 'required',
-            'description' => 'required',
-        ]);
-
-        $id = $request->id;
-
-        if($id){
-            Upload::where('id', $request->id)->update([
-                'user_id' => Auth::user()->id,
-                'type' => $request->type,
-                'title' => $request->title,
-                'file' => $request->file,
-                'thumb' => '',
-                'description' => $request->description,
-                'status' => Auth::user()->role == 'admin' ? 'approved' : 'pending',
-                'created_at' => Carbon::now(),
-            ]);
-        } else{
-            Upload::insert([
-                'user_id' => Auth::user()->id,
-                'type' => $request->type,
-                'title' => $request->title,
-                'file' => $request->file,
-                'thumb' => '',
-                'description' => $request->description,
-                'status' => Auth::user()->role == 'admin' ? 'approved' : 'pending',
-                'created_at' => Carbon::now(),
-            ]);
-        }
-        return response()->json('success');
-    }
-
-    public function deleteBulkUpload($id) {
-        $upload = Upload::where('id', $id)->first();
         $upload->delete();
         return back()->with('messege', 'File Deleted Successfully');
     }

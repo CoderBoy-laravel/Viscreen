@@ -182,7 +182,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Pawlox\VideoThumbnail\VideoThumbnailServiceProvider::class,
-
         /*
          * Package Service Providers...
          */
@@ -197,7 +196,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
-        App\Providers\HelperServiceProvider::class,
 
     ],
 
